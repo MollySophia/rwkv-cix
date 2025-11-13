@@ -1,0 +1,6 @@
+*.onnx
+*.pyc
+*.bin
+*.txt
+internal*/
+build*
