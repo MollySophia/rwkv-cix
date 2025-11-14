@@ -12,6 +12,7 @@ import NOE_Engine.NOE_Engine as NOE_Engine
 
 parser = argparse.ArgumentParser(description='test cix model on npu')
 parser.add_argument('model', type=Path, help='Path to RWKV pth file')
+args = parser.parse_args()
 
 model_args.model_name = str(args.model)
 

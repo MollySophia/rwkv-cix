@@ -2,5 +2,7 @@
 *.pyc
 *.bin
 *.txt
+*.json
+*.cix
 internal*/
 build*
