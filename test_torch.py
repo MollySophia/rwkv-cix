@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 model_args = RWKV_Config()
 model_args.device = 'cpu'
-model_args.dtype = torch.float16
+model_args.dtype = torch.float32
 model_args.convert_fc_to_conv = False
 model_args.rescale_layer = 0
 model_args.wkv_customop = False
@@ -22,7 +22,7 @@ model_args.output_last = False
 
 model_args.model_name = str(args.model)
 
-tokenizer = RWKV_TOKENIZER("./rwkv_src/rwkv_vocab_v20230424.txt")
+tokenizer = RWKV_TOKENIZER("./assets/rwkv_vocab_v20230424.txt")
 
 model = RWKV_RNN(model_args)
 device = model.device

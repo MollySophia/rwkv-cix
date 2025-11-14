@@ -4,5 +4,6 @@
 *.txt
 *.json
 *.cix
+*.npy
 internal*/
 build*

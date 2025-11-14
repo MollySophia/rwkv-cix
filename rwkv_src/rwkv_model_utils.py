@@ -13,9 +13,9 @@ def get_dummy_state_kvcache(batch_size, model_cfg, device, dtype=torch.float16):
     num_layers, num_heads, embed_dim = extract_info_from_model_cfg(model_cfg)
     head_size = embed_dim // num_heads
 
-    state_0 = (batch_size, embed_dim)
-    state_1 = (num_heads, head_size, head_size)
-    state_2 = (batch_size, embed_dim)
+    state_0 = (batch_size, 1, embed_dim)
+    state_1 = (batch_size, num_heads, head_size, head_size)
+    state_2 = (batch_size, 1, embed_dim)
  
     state = []
     for _ in range(0, num_layers):
