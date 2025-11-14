@@ -41,19 +41,37 @@ class Wkv7(nn.Module):
                 # b = b.view(self.num_heads, 1, self.head_size)
                 # a = a.view(self.num_heads, self.head_size, 1)
 
+                # r = r.view(self.num_heads, 1, self.head_size)
+                # v = v.view(self.num_heads, self.head_size, 1)
+                # k = k.view(self.num_heads, 1, self.head_size)
+                # w = w.view(self.num_heads, 1, self.head_size)
+                # b = b.view(self.num_heads, 1, self.head_size)
+                # a = a.view(self.num_heads, 1, self.head_size)
+
+                # # kv = self.matmul_kv(v, k)
+                # kv = torch.bmm(v, k)
+                # # state2_out = self.add_kv(self.add_sab(self.apply_time_decay(state2, w), self.matmul_sab(self.matmul_sa(state2, a), b)), kv)
+                # state2_out = kv + state2 * w + (state2 * a).sum(dim=-1, keepdim=True) @ b
+                # # x = self.matmul_r(state2_out, r).view(seq_length, self.num_heads, 1, self.head_size)
+                # x = (state2_out * r).sum(dim=-1).view(seq_length, self.num_heads, 1, self.head_size)
+
+                # ones =  torch.ones_like(state2)
+
+                ### batchmatmul-less implementation
                 r = r.view(self.num_heads, 1, self.head_size)
-                v = v.view(self.num_heads, self.head_size, 1)
+                v = v.view(self.num_heads, self.head_size, 1).broadcast_to(state2.shape)
+                # v = v.view(self.num_heads, self.head_size, 1) * ones
                 k = k.view(self.num_heads, 1, self.head_size)
                 w = w.view(self.num_heads, 1, self.head_size)
                 b = b.view(self.num_heads, 1, self.head_size)
                 a = a.view(self.num_heads, 1, self.head_size)
 
-                # kv = self.matmul_kv(v, k)
-                kv = torch.bmm(v, k)
-                # state2_out = self.add_kv(self.add_sab(self.apply_time_decay(state2, w), self.matmul_sab(self.matmul_sa(state2, a), b)), kv)
-                state2_out = kv + state2 * w + (state2 * a).sum(dim=-1, keepdim=True) @ b
-                # x = self.matmul_r(state2_out, r).view(seq_length, self.num_heads, 1, self.head_size)
-                x = (state2_out * r).sum(dim=-1).view(seq_length, self.num_heads, 1, self.head_size)
+                kv = v * k
+                sa = (state2 * a).sum(dim=-1, keepdim=True).broadcast_to(state2.shape)
+                # sa = (state2 * a).sum(dim=-1, keepdim=True) * ones
+
+                state2_out = kv + state2 * w + sa * b
+                x = (state2_out * r).sum(dim=-1).reshape(seq_length, self.num_heads, 1, self.head_size)
             else:
                 r = r.view(seq_length, self.num_heads, self.head_size, 1)
                 v = v.view(seq_length, self.num_heads, self.head_size, 1)

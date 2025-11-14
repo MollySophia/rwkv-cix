@@ -8,7 +8,7 @@ import argparse
 from pathlib import Path
 from rwkv_src.rwkv_model_utils import get_dummy_state_kvcache, sample_logits
 
-parser = argparse.ArgumentParser(description='Make calibration sample files')
+parser = argparse.ArgumentParser(description='test torch model')
 parser.add_argument('model', type=Path, help='Path to RWKV pth file')
 args = parser.parse_args()
 

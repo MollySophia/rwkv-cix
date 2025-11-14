@@ -15,15 +15,13 @@ args.device = 'cpu'
 args.rescale_layer=0
 
 print(f'Loading {args.model_name} ...')
-# model = RWKV_RNN(args)
-model = make_chunks(12, args)
-model = model[0]
+model = RWKV_RNN(args)
 model = model.to(args.device)
 
 # input = torch.zeros(1, 1, model.model_info.n_embd, device=args.device, dtype=args.dtype)
 in0 = torch.LongTensor([24281]).to(args.device)
 state = get_dummy_state_kvcache(1, model.model_info, torch.device(args.device), args.dtype)
 
-input_names = ['input'] + [f'state{i}_in' for i in range(len(state) // 12)]
-output_names = ['output'] + [f'state{i}_out' for i in range(len(state) // 12)]
-torch.onnx.export(model, (in0, *(state[:len(state) // 12])), "model.onnx", verbose=False, input_names=input_names, output_names=output_names)
+input_names = ['input'] + [f'state{i}_in' for i in range(len(state))]
+output_names = ['output'] + [f'state{i}_out' for i in range(len(state))]
+torch.onnx.export(model, (in0, *(state)), "model.onnx", verbose=False, input_names=input_names, output_names=output_names)
